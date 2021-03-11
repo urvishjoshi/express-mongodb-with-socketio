@@ -1,0 +1,7 @@
+<div class="container">
+    <div class="row">
+        <% if(pizzas){ pizzas.forEach(pizza => { %>
+            <%- include('_cards', {pizza}) %>
+        <% }); } %> 
+    </div>
+</div>

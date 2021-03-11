@@ -1,0 +1,50 @@
+<div class="container p-3">
+    <h2  class="text-center">Your Orders</h2>
+    <div class="flex-column">
+        <div class="col my-3 mx-auto">
+        <% if (messages.error) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= messages.error %>
+            </div>
+        <% } %>
+        <% if (messages.success) { %>
+            <div class="alert alert-success" role="alert">
+                <%= messages.success %>
+            </div>
+        <% } %>
+            <div class="card">
+                <div class="card-body">
+                    <% if (session.cart) { %>
+                        <% for(let pizza of Object.values(session.cart.items)) { %> 
+                            <%# include('_order', {pizza: pizza.item}) %>
+                        <% } %> 
+                    <% } %>
+                    <table class="table">
+                        <thead>
+                            <th>Order ID</th>
+                            <th>Address</th>
+                            <th>Booked at</th>
+                        </thead>
+                        <tbody>
+                    <% if (orders.length) { %>
+                        <% orders.forEach(order => { %> 
+                            <tr>
+                                <td>
+                                    <a href="/customer/order/track/<%= order._id %>" class="link"><%= order._id %></a>
+                                </td>
+                                <td><%= order.address %> </td>
+                                <td><%= moment(order.createdAt).format('hh:mm A') %> </td>
+                            </tr>
+                        <% }) %> 
+                    <% } else { %>
+                            <tr>
+                                <td colspan="3" class="text-center">No order placed</td>
+                            </tr>
+                    <% } %> 
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

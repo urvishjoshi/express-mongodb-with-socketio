@@ -1,0 +1,15 @@
+<div class="col-3 my-3">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title"><%= pizza.name %> </h5>
+            <p class="card-text"> </p>
+            <div class="d-flex justify-content-between">
+                <b>$<%= pizza.price %> </b>
+                <button class="btn btn-sm badge-pill bg-primary text-light add-to-cart" type="button" data-pizza="<%= JSON.stringify(pizza) %>">+ ADD 
+                <% if (session.cart && session.cart.items[pizza._id] && user) { %>
+                    <b><%= session.cart.items[pizza._id].quantity %> </b>
+                <% } %> </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="container p-3">
+    <h2  class="text-center">Your Cart</h2>
+    <div class="flex-column">
+        <div class="col-4 my-3 mx-auto">
+        <% if (messages.error) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= messages.error %>
+            </div>
+        <% } %>
+        <% if (messages.success) { %>
+            <div class="alert alert-success" role="alert">
+                <%= messages.success %>
+            </div>
+        <% } %>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Pizza</h5>
+                    <hr>
+                    <% if (session.cart) { %>
+                        <% for(let pizza of Object.values(session.cart.items)) { %> 
+                            <%- include('_order', {pizza: pizza.item}) %>
+                        <% } %> 
+                    <% } %>
+                    <% if (user) { %>
+                        <div class="d-flex flex-column justify-content-end">
+                            <div class="ml-auto">
+                                <span class="font-weight-bold">Total:</span>
+                            <span class="font-weight-bold text-success">$<%= session.cart ? session.cart.totalPrice : '' %> </span>
+                        </div>
+                         
+                        <form action="orders" method="POST">
+                            <input type="text" class="form-control my-3" name="address" placeholder="Address">
+                            <button type="submit" class="btn btn-success float-right">Place Order</button>
+                        </form>
+                    <% } else { %>
+                        <a href="/login" class="btn btn-primary btn-block">Login to continue</a>   
+                    <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
