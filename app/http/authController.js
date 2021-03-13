@@ -23,7 +23,7 @@ function authController() {
                         req.flash('error', info.message)
                         return next(err)
                     }
-                    return res.redirect('/')
+                    return res.redirect(`/${req.user.role=='admin'? 'admin':'customers'}/orders`)
                 })
             })(req, res, next)
         },
@@ -60,7 +60,7 @@ function authController() {
             user.save().then((user) => {
                 return res.redirect('/')
             }).catch(err => {
-
+                console.log(err);
             })
         },
 

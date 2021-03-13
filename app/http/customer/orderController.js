@@ -1,5 +1,5 @@
-const Order = require('../../models/order');
-const moment = require('moment');
+const Order = require('../../models/order')
+const moment = require('moment')
 
 function orderController() {
     return {
@@ -9,6 +9,14 @@ function orderController() {
                 {sort: { 'createdAt': -1}}
                 )
             return res.render('customers/orders/index', {orders, moment})
+        },
+
+        async show(req, res) {
+            const order = await Order.findById(req.params.id)
+
+            if (req.user._id.toString() == order.customerId.toString())
+                return res.render('customers/orders/show', { order })
+            return res.render('/')
         },
 
         store(req, res) {

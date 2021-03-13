@@ -11,6 +11,7 @@ const session = require('express-session');
 const flash = require('express-flash');
 const MongoStore = require('connect-mongo').default;
 const passport = require('passport');
+const Emitter = require('events');
 
 // for defining path for asset files
 app.use(express.static('public'))
@@ -60,7 +61,7 @@ passportInit(passport)
 app.use(passport.initialize())
 app.use(passport.session())
 
-//set session as global 
+// set session as global 
 app.use((req, res, next) => {
     res.locals.session = req.session
     res.locals.user = req.user
@@ -68,7 +69,23 @@ app.use((req, res, next) => {
 })
 
 
-//web routes
+// web routes
 require('./routes/web')(app)
 
-app.listen(PORT)
+const eventEmitter = new Emitter()
+app.set('eventEmitter', eventEmitter)
+
+const server = app.listen(PORT)
+
+// establish connection
+const io = require('socket.io')(server)
+io.on('connection', (socket) => {
+    // bind user with a unique id
+    socket.on('join', (orderId) => {
+        socket.join(orderId)
+    })
+})
+
+eventEmitter.on('orderUpdated', (order) => {
+    io.to(`order_${order.id}`).emit('orderUpdated', order)
+})

@@ -19,28 +19,15 @@
                             <%# include('_order', {pizza: pizza.item}) %>
                         <% } %> 
                     <% } %>
-                    <table class="table">
+                    <table class="">
                         <thead>
+                            <th>Orders</th>
                             <th>Order ID</th>
                             <th>Address</th>
+                            <th>Status</th>
                             <th>Booked at</th>
                         </thead>
-                        <tbody>
-                    <% if (orders.length) { %>
-                        <% orders.forEach(order => { %> 
-                            <tr>
-                                <td>
-                                    <a href="/customers/orders/<%= order._id %>" class="link"><%= order._id %></a>
-                                </td>
-                                <td><%= order.address %> </td>
-                                <td><%= moment(order.createdAt).format('hh:mm A') %> </td>
-                            </tr>
-                        <% }) %> 
-                    <% } else { %>
-                            <tr>
-                                <td colspan="3" class="text-center">No order placed</td>
-                            </tr>
-                    <% } %> 
+                        <tbody id="ordersTableBody">
                         </tbody>
                     </table>
                 </div>

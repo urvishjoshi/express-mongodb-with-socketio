@@ -1,0 +1,38 @@
+<style>
+    .status{ border-left: 2px dashed; color: grey}
+</style>
+<section>
+    <div class="container">
+        <div class="col-8 mt-5 mx-auto">
+            <div class="d-flex justify-content-around">
+                <h2 class="flex">Track delivery status</h2>
+                <p class="badge badge-pill bg-info text-light my-auto"><%= order._id %></p>
+            </div>
+            <input type="hidden" id="Order" value="<%= JSON.stringify(order) %> ">
+            <div class="my-5 justify-content-around">
+                <ul>
+                    <li class="status px-2 mb-2 pb-3 d-flex justify-content-between" data-status="order_placed">
+                        Order Placed
+                        <span id="time"></span>
+                    </li>
+                    <li class="status px-2 mb-2 pb-3 d-flex justify-content-between" data-status="order_accepted">
+                        Order confirmation
+                        <span id="time"></span>
+                    </li>
+                    <li class="status px-2 mb-2 pb-3 d-flex justify-content-between" data-status="order_preparation">
+                        Preparation
+                        <span id="time"></span>
+                    </li>
+                    <li class="status px-2 mb-2 pb-3 d-flex justify-content-between"  data-status="order_out_for_delivery">
+                        Out for delivery 
+                        <span id="time"></span>
+                    </li>
+                    <li class="status px-2 mb-2 d-flex justify-content-between" data-status="completed">
+                        Complete
+                        <span id="time"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
