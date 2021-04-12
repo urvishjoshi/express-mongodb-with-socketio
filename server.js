@@ -1,5 +1,4 @@
 const dotenv = require('dotenv').config();
-const PORT = 3000
 const express = require('express')
 const app = express()
 const ejs = require('ejs');
@@ -21,8 +20,8 @@ app.set('views', path.join(__dirname, '/resources/views'))
 app.set('view engine', 'ejs')
 
 //connect mongoDB
-const url = 'mongodb://localhost/food-express'
-mongoose.connect(url, { 
+const url = process.env.MONGODB_URL
+mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify:true
 })
 const connection = mongoose.connection
@@ -71,11 +70,15 @@ app.use((req, res, next) => {
 
 // web routes
 require('./routes/web')(app)
+// 404 error
+app.use((req, res) => {
+    res.status(404).render('errors/404')
+})
 
 const eventEmitter = new Emitter()
 app.set('eventEmitter', eventEmitter)
 
-const server = app.listen(PORT)
+const server = app.listen(process.env.PORT)
 
 // establish connection
 const io = require('socket.io')(server)
@@ -88,4 +91,8 @@ io.on('connection', (socket) => {
 
 eventEmitter.on('orderUpdated', (order) => {
     io.to(`order_${order.id}`).emit('orderUpdated', order)
+})
+
+eventEmitter.on('orderPlaced', (data) => {
+    io.to(`adminRoom`).emit('orderPlaced', data)
 })

@@ -58,7 +58,8 @@ function authController() {
                 password: hash
             })
             user.save().then((user) => {
-                return res.redirect('/')
+                req.flash('toast', 'User registered successfully')
+                return res.redirect('/login')
             }).catch(err => {
                 console.log(err);
             })

@@ -27,6 +27,7 @@ function routes(app) {
     
     //admin
     app.get('/admin/orders', admin, adminOrderController().index)
+    app.post('/admin/new-pizza', admin, adminOrderController().store)
     app.post('/admin/orders/status', admin, statusController().update)
 }
 

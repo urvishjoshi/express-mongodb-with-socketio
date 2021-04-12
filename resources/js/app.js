@@ -43,29 +43,27 @@ window.dangerToast = function dangerToast(msg) {
 let currentUrl = window.location.pathname
 
 // cart
-if (currentUrl == '/cart') {
-    let addToCart = document.querySelectorAll('.add-to-cart');
-    let cartCount = document.querySelector('#cartCount')
+let addToCart = document.querySelectorAll('.add-to-cart');
+let cartCount = document.querySelector('#cartCount')
 
-    function updateCart(pizza, btn) {
-        return axios.post('/update-cart', pizza).then(res => {
-            if(res.data == 'unauthorized')
-                return dangerToast('Login to add to cart')
+function updateCart(pizza, btn) {
+    return axios.post('/update-cart', pizza).then(res => {
+        if(res.data == 'unauthorized')
+            return dangerToast('Login to add to cart')
 
-            cartCount.innerText = res.data.totalQuantity
-            let quantity = res.data.items[pizza._id].quantity
-            btn.innerText = `+ ADD ${quantity}`
-            successToast(`${pizza.name} added to cart`)
-        })
-    }
-
-    addToCart.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            let pizza = JSON.parse(btn.dataset.pizza)
-            updateCart(pizza, btn)
-        })
-    });
+        cartCount.innerText = res.data.totalQuantity
+        let quantity = res.data.items[pizza._id].quantity
+        btn.innerText = `+ ADD ${quantity}`
+        successToast(`${pizza.name} added to cart`)
+    })
 }
+
+addToCart.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        let pizza = JSON.parse(btn.dataset.pizza)
+        updateCart(pizza, btn)
+    })
+});
 
 //order
 let statuses = document.querySelectorAll('.status')
@@ -111,6 +109,9 @@ socket.on('orderUpdated', (order) => {
     successToast('Order updated')
 })
 // admin js
+if(currentUrl.includes('admin')) {
+    socket.emit('join', 'adminRoom')
+}
 if (currentUrl == '/admin/orders') {
     const ordersTableBody = document.querySelector('#ordersTableBody')
     let orders = []
@@ -135,7 +136,7 @@ if (currentUrl == '/admin/orders') {
             return `
                 <tr>
                     <td>
-                        <p>${order._id}</p>
+                        <p class="badge bg-secondary text-light">${order._id}</p>
                         <div>${renderItems(order.items)}</div>
                     </td>
                     <td>${order.customerId.name}</td>
@@ -166,4 +167,11 @@ if (currentUrl == '/admin/orders') {
             `
         }).join('')
     }
+
+    socket.on('orderPlaced', (order) => {
+        orders.unshift(order)
+        successToast('New order')
+        ordersTableBody.innerHTML = ''
+        ordersTableBody.innerHTML = generateMarkup(orders)
+    })
 }

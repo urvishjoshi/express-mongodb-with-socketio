@@ -1,4 +1,42 @@
 <div class="container">
+
+    <% if (user && user.role == 'admin') { %>
+        <div class="row">
+            <button class="mx-auto mt-3 btn btn-primary" data-toggle="modal" data-target="#exampleModal">New Pizza</button>
+        </div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form action="/admin/new-pizza" method="POST" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Create new Pizza</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Pizza name</label>
+                            <input type="text" class="form-control" name="name" id="name"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="price" class="form-label">Price</label>
+                            <input type="number" min="1" value="1" class="form-control" name="price" id="price"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="size" class="form-label">Size</label>
+                            <select name="size" id="size" class="custom-select">
+                                <option>LARGE</option>
+                                <option>MEDIUM</option>
+                                <option>SMALL</option>
+                            </select>
+                        </div>
+                        <center><button type="submit" class="btn btn-primary">Create</button></center>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+
     <div class="row">
         <% if(pizzas){ pizzas.forEach(pizza => { %>
             <%- include('_cards', {pizza}) %>

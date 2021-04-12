@@ -1901,27 +1901,25 @@ window.dangerToast = function dangerToast(msg) {
 
 var currentUrl = window.location.pathname; // cart
 
-if (currentUrl == '/cart') {
-  var updateCart = function updateCart(pizza, btn) {
-    return axios__WEBPACK_IMPORTED_MODULE_1___default().post('/update-cart', pizza).then(function (res) {
-      if (res.data == 'unauthorized') return dangerToast('Login to add to cart');
-      cartCount.innerText = res.data.totalQuantity;
-      var quantity = res.data.items[pizza._id].quantity;
-      btn.innerText = "+ ADD ".concat(quantity);
-      successToast("".concat(pizza.name, " added to cart"));
-    });
-  };
+var addToCart = document.querySelectorAll('.add-to-cart');
+var cartCount = document.querySelector('#cartCount');
 
-  var addToCart = document.querySelectorAll('.add-to-cart');
-  var cartCount = document.querySelector('#cartCount');
-  addToCart.forEach(function (btn) {
-    btn.addEventListener('click', function (e) {
-      var pizza = JSON.parse(btn.dataset.pizza);
-      updateCart(pizza, btn);
-    });
+function updateCart(pizza, btn) {
+  return axios__WEBPACK_IMPORTED_MODULE_1___default().post('/update-cart', pizza).then(function (res) {
+    if (res.data == 'unauthorized') return dangerToast('Login to add to cart');
+    cartCount.innerText = res.data.totalQuantity;
+    var quantity = res.data.items[pizza._id].quantity;
+    btn.innerText = "+ ADD ".concat(quantity);
+    successToast("".concat(pizza.name, " added to cart"));
   });
-} //order
+}
 
+addToCart.forEach(function (btn) {
+  btn.addEventListener('click', function (e) {
+    var pizza = JSON.parse(btn.dataset.pizza);
+    updateCart(pizza, btn);
+  });
+}); //order
 
 var statuses = document.querySelectorAll('.status');
 var orderInput = document.querySelector('#Order');
@@ -1968,10 +1966,14 @@ socket.on('orderUpdated', function (order) {
   successToast('Order updated');
 }); // admin js
 
+if (currentUrl.includes('admin')) {
+  socket.emit('join', 'adminRoom');
+}
+
 if (currentUrl == '/admin/orders') {
   var generateMarkup = function generateMarkup(orders) {
     return orders.map(function (order) {
-      return "\n                <tr>\n                    <td>\n                        <p>".concat(order._id, "</p>\n                        <div>").concat(renderItems(order.items), "</div>\n                    </td>\n                    <td>").concat(order.customerId.name, "</td>\n                    <td>").concat(order.address, "</td>\n                    <td>\n                        <form action=\"/admin/orders/status\" method=\"POST\">\n                            <input type=\"hidden\" name=\"orderId\" value=\"").concat(order._id, "\"></input>\n                            <select name=\"status\" id=\"status\" class=\"custom-select\" onchange=\"updateStatus(this.form, this)\">\n                                <option value=\"order_placed\" ").concat(order.status == 'order_placed' ? 'selected' : '', ">Order placed</option>\n                                <option value=\"order_accepted\" ").concat(order.status == 'order_accepted' ? 'selected' : '', ">Order accepted</option>\n                                <option value=\"order_preparation\" ").concat(order.status == 'order_preparation' ? 'selected' : '', ">Order preparation</option>\n                                <option value=\"order_out_for_delivery\" ").concat(order.status == 'order_out_for_delivery' ? 'selected' : '', ">Order out for delivery</option>\n                                <option value=\"completed\" ").concat(order.status == 'completed' ? 'selected' : '', ">Completed</option>\n                            </select>\n                        </form>\n                    </td>\n                    <td>").concat(moment__WEBPACK_IMPORTED_MODULE_0___default()(order.createdAt).format('hh:mm A'), "</td>\n                </tr>\n            ");
+      return "\n                <tr>\n                    <td>\n                        <p class=\"badge bg-secondary text-light\">".concat(order._id, "</p>\n                        <div>").concat(renderItems(order.items), "</div>\n                    </td>\n                    <td>").concat(order.customerId.name, "</td>\n                    <td>").concat(order.address, "</td>\n                    <td>\n                        <form action=\"/admin/orders/status\" method=\"POST\">\n                            <input type=\"hidden\" name=\"orderId\" value=\"").concat(order._id, "\"></input>\n                            <select name=\"status\" id=\"status\" class=\"custom-select\" onchange=\"updateStatus(this.form, this)\">\n                                <option value=\"order_placed\" ").concat(order.status == 'order_placed' ? 'selected' : '', ">Order placed</option>\n                                <option value=\"order_accepted\" ").concat(order.status == 'order_accepted' ? 'selected' : '', ">Order accepted</option>\n                                <option value=\"order_preparation\" ").concat(order.status == 'order_preparation' ? 'selected' : '', ">Order preparation</option>\n                                <option value=\"order_out_for_delivery\" ").concat(order.status == 'order_out_for_delivery' ? 'selected' : '', ">Order out for delivery</option>\n                                <option value=\"completed\" ").concat(order.status == 'completed' ? 'selected' : '', ">Completed</option>\n                            </select>\n                        </form>\n                    </td>\n                    <td>").concat(moment__WEBPACK_IMPORTED_MODULE_0___default()(order.createdAt).format('hh:mm A'), "</td>\n                </tr>\n            ");
     }).join('');
   };
 
@@ -1995,6 +1997,12 @@ if (currentUrl == '/admin/orders') {
     ordersTableBody.innerHTML = markup;
   })["catch"](function (err) {
     console.log(err);
+  });
+  socket.on('orderPlaced', function (order) {
+    orders.unshift(order);
+    successToast('New order');
+    ordersTableBody.innerHTML = '';
+    ordersTableBody.innerHTML = generateMarkup(orders);
   });
 }
 

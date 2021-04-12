@@ -17,7 +17,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
 
-                <a class="navbar-brand" href="#">Navbar</a>
+                <a class="navbar-brand" href="/">Pizza Express</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                     aria-label="Toggle navigation">
@@ -30,13 +30,23 @@
                             <a class="nav-link" href="/">Menu</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/customers/orders">Orders</a>
+                            <a class="nav-link active" href="/<% if (user && user.role == 'admin') { %>admin<% } else { %>customers<% } %>/orders">Orders</a>
+                        </li>
+                        <li class="nav-item badge-pill bg-primary ml-2">
+                            <a class="nav-link" href="/cart"><b id="cartCount" class="text-light mr-2"><% if (session.cart && user) { %>
+                                <%= session.cart.totalQuantity %>
+                            <% } else { %>0<% } %></b><i class="fas fa-shopping-cart text-light"></i></a>
                         </li>
                     <% if (user) { %>
-                        <li class="nav-item">
-                            <form action="/logout" method="POST">
-                                <button class="nav-link btn" type="submit">Logout</button>
-                            </form>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <%= user.name %> 
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <form action="/logout" method="POST">
+                                    <button class="nav-link btn" type="submit">Logout</button>
+                                </form>
+                            </div>
                         </li>
                     <% } else { %>
                         <li class="nav-item">
@@ -46,11 +56,6 @@
                             <a class="nav-link" href="/login">Login</a>
                         </li>
                     <% } %> 
-                        <li class="nav-item badge-pill bg-primary ml-2">
-                            <a class="nav-link" href="/cart"><b id="cartCount" class="text-light mr-2"><% if (session.cart && user) { %>
-                                <%= session.cart.totalQuantity %>
-                            <% } else { %>0<% } %></b><i class="fas fa-shopping-cart text-light"></i></a>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -66,6 +71,12 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/app.js"></script>
     <script>
+        <% if (messages.toast) { %>
+            successToast('<%= messages.toast %>');
+        <% } else if(messages.errorToast) { %>
+            errorToast('<%= messages.toast %>');
+        <% } %>
+
         async function updateStatus(form) {
             const res = await $.post('/admin/orders/status', $(form).serialize(), (data) => {
                 if (!data)
